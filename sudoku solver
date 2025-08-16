@@ -1,0 +1,48 @@
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        rows = [set() for _ in range(9)]
+        cols = [set() for _ in range(9)]
+        boxes = [set() for _ in range(9)]
+        unfilled = []
+
+        # Populate initial sets and find empty cells
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] == '.':
+                    unfilled.append((r, c))
+                else:
+                    rows[r].add(board[r][c])
+                    cols[c].add(board[r][c])
+                    boxes[(r // 3) * 3 + c // 3].add(board[r][c])
+
+        self._fill(0, unfilled, rows, cols, boxes, board)
+
+    def _fill(self, index, unfilled, rows, cols, boxes, board):
+        if index >= len(unfilled):
+            return True  # All cells filled, solution found
+
+        r, c = unfilled[index]
+        box_idx = (r // 3) * 3 + c // 3
+
+        for num_char in "123456789":
+            if num_char not in rows[r] and num_char not in cols[c] and num_char not in boxes[box_idx]:
+                # Place the number
+                board[r][c] = num_char
+                rows[r].add(num_char)
+                cols[c].add(num_char)
+                boxes[box_idx].add(num_char)
+
+                # Recurse
+                if self._fill(index + 1, unfilled, rows, cols, boxes, board):
+                    return True
+
+                # Backtrack
+                board[r][c] = '.'
+                rows[r].remove(num_char)
+                cols[c].remove(num_char)
+                boxes[box_idx].remove(num_char)
+
+        return False  # No valid number found for this cell
