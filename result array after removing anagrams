@@ -1,0 +1,27 @@
+from typing import List
+import collections
+class Solution:
+    def removeAnagrams(self, words: List[str]) -> List[str]:
+        def is_anagram(a: str, b: str) -> bool:
+            if len(a) != len(b):
+                return False
+            cnt = collections.Counter(a)
+            for c in b:
+                cnt[c] -= 1
+                if cnt[c] < 0:
+                    return False
+            return True
+        
+        result = []
+        i = 0
+        n = len(words)
+        while i < n:
+            # always take words[i]
+            result.append(words[i])
+            j = i + 1
+            # skip all subsequent words that are anagrams of words[i]
+            while j < n and is_anagram(words[i], words[j]):
+                j += 1
+            i = j
+        
+        return result
